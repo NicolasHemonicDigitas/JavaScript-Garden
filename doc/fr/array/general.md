@@ -26,19 +26,17 @@ la boucle `for` classique.
 L'astuce complémentaire sur l'exemple ci-dessus, c'est de mettre en cache la longueur
 du tableau via l'utilisation d'une variable `l = list.length`.
 
-Although the `length` property is defined on the array itself, there is still an
-overhead for doing the lookup on each iteration of the loop. And while recent 
-JavaScript engines **may** apply optimization in this case, there is no way of
-telling whether the code will run on one of these newer engines or not. 
+Même si la propriété `length` property est définie dans le tableau lui-même, il y a encore
+une surchauffe possible au fait d'analyser la totalité du tableau à chaque itération de la boucle.
+Malgré les moteurs javascript récents qui **devraient** optimiser ce processus, il n'y aucun
+moyen de savoir si le code va s'exécuter sur un moteur récent ou plus ancien.
+En fait, ôter la gestion du cache pourrait provoquer une boucle seulement pour 
+**moitié aussi rapide** qu'avec la longueur mise en cache.
 
-In fact, leaving out the caching may result in the loop being only **half as
-fast** as with the cached length.
+### La propriété `length`
 
-### The `length` Property
-
-While the *getter* of the `length` property simply returns the number of
-elements that are contained in the array, the *setter* can be used to 
-**truncate** the array.
+L'**appel** (getter) à la propriété `length` retourne le nombre d'éléments contenus dans le tableau,
+alors que l'**affectation** (setter) peut être utilisé pour **tronquer** le tableau.
 
     var foo = [1, 2, 3, 4, 5, 6];
     foo.length = 3;
@@ -47,12 +45,11 @@ elements that are contained in the array, the *setter* can be used to
     foo.length = 6;
     foo; // [1, 2, 3]
 
-Assigning a smaller length does truncate the array, but increasing the length 
-does not have any effect on the array.
+Assigner une longueur plus courte va tronquer le tableau, mais en revanche, affecter une valeur plus élevée n'a
+aucun effet sur le tableau.
 
-### In Conclusion
+### En Conclusion
 
-For the best performance it is recommended to always use the plain `for` loop
-and cache the `length` property. The use of `for in` on an array is a sign of
-badly written code that is prone to bugs and bad performance. 
-
+Pour les meilleures performances, il est recommandé d'utiliser la boucle `for`
+et de mettre en cache la propriété `length`. L'utilisation de `for in` sur un tableau est un signe de code
+mal écrit qui vous garantie à coup sûr erreurs et performances dégradées.
