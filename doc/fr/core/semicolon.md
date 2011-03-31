@@ -1,30 +1,31 @@
-## Automatic Semicolon Insertion
+## Insertion de point virgule automatique
 
-Although JavaScript has C style syntax, it does **not** enforce the use of
-semicolons in the source code, it is possible to omit them.
+Bien que JavaScript ait une syntaxe de style C, il ne force **pas**
+à l'utilisation de points virgules dans le code source, 
+il est donc possible de les omettre.
 
-But JavaScript is not a semicolon-less language, it in fact needs the 
-semicolons in order to understand the source code. Therefore the JavaScript
-parser **automatically** inserts them whenever it encounters a parse
-error due to a missing semicolon.
-
-    var foo = function() {
-    } // parse error, semicolon expected
-    test()
-
-Insertion happens, and the parser tries again.
+Toutefois, JavaScript n'est pas pour autant un langage sans point virgule, il a en réalité besoin de ces 
+informations pour comprendre le code source. En l'occurrence, le parser JavaScript
+va **automatiquement** les insérer à chaque fois qu'il va rencontrer une erreur de génération
+liée à un point virgule manquant.
 
     var foo = function() {
-    }; // no error, parser continues
+    } // erreur d'analyse, point virgule attendu
     test()
 
-The automatic insertion of semicolon is considered to be one of **biggest**
-design flaws in the language, as it *can* change the behavior of code.
+L'insertion s'effectue, et le parser essaie à nouveau
 
-### How it Works
+    var foo = function() {
+    }; // pas d'erreur, l'analyse continue
+    test()
 
-The code below has no semicolons in it, so it is up to the parser to decide where
-to insert them.
+L'insertion automatique de ces points virgules est considérée comme l'une des **plus grosses**
+faille de design du langage, puisqu'elle *peut* changer le comportement initialement prévu pour le code.
+
+### Comme cela fonctionne
+
+Le code ci-après n'a aucun point virgule, ce qui laisse donc tout le loisir au parser de décider 
+où les insérer.
 
     (function(window, undefined) {
         function test(options) {
@@ -35,8 +36,8 @@ to insert them.
             })
 
             options.value.test(
-                'long string to pass here',
-                'and another long string to pass'
+                'longue chaine à passer ici',
+                'et encore une autre longue chaine ici'
             )
 
             return
@@ -53,7 +54,7 @@ to insert them.
 
     })(window)
 
-Below is the result of the parser's "guessing" game.
+Ci-dessous le résultat de ce "jeu de hasard" du parser :
 
     (function(window, undefined) {
         function test(options) {
@@ -61,38 +62,38 @@ Below is the result of the parser's "guessing" game.
             // Not inserted, lines got merged
             log('testing!')(options.list || []).forEach(function(i) {
 
-            }); // <- inserted
+            }); // <- inséré
 
             options.value.test(
-                'long string to pass here',
-                'and another long string to pass'
-            ); // <- inserted
+                'longue chaine à passer ici',
+                'et encore une autre longue chaine ici'
+            ); // <- inséré
 
-            return; // <- inserted, breaks the return statement
-            { // treated as a block
+            return; // <- inséré, casse l'objet retourné
+            { // donnée traitée comme un bloc
 
-                // a label and a single expression statement
+                // un libélé et une simple expression
                 foo: function() {} 
-            }; // <- inserted
+            }; // <- inséré
         }
-        window.test = test; // <- inserted
+        window.test = test; // <- inséré
 
-    // The lines got merged again
+    // Les lignes sont fusionnée également
     })(window)(function(window) {
-        window.someLibrary = {}; // <- inserted
+        window.someLibrary = {}; // <- inséré
 
-    })(window); //<- inserted
+    })(window); //<- inséré
 
-> **Note:** The JavaScript parser does not "correctly" handle return statements 
-> which are followed by a new line, while this is not neccessarily the fault of 
-> the automatic semicolon insertion, it can still be an unwanted side-effect. 
+> **Note:** Le parser JavaScript ne traite pas "correctement" les 'return' qui sont suivi
+> d'une nouvelle ligne; même si ça n'est pas nécessairement la faute de l'insertion automatique
+> des points virgules, cela peut tout de même être un effet de bord indésirable.
 
-The parser drastically changed the behavior of the code above, in certain cases
-it does the **wrong thing**.
+Le parser a ici complètement changé le comportement du code ci dessus, ce qui prouve que
+dans certains cas, il fait les **mauvais choix**.
 
-### Leading Parenthesis
+### Parenthèses prioritaires
 
-In case of a leading parenthesis, the parser will **not** insert a semicolon.
+En cas de parenthèses, le parser n'insère **pas** de point virgule.
 
     log('testing!')
     (options.list || []).forEach(function(i) {})
